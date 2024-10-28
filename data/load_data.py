@@ -1,6 +1,7 @@
 # load_data.py
 from sklearn.datasets import load_iris, fetch_openml
 import numpy as np
+from sklearn.preprocessing import OneHotEncoder
 
 def load_iris_data():
     """
@@ -16,7 +17,8 @@ def load_mnist_data():
     Carga y devuelve el dataset de MNIST.
     """
     mnist = fetch_openml('mnist_784', version=1)
-    X = mnist['data'].values.reshape(-1, 1, 28, 28) / 255.0  
-    y = mnist['target'].astype(np.int64).values.reshape(-1, 1)
     
+    X = mnist['data'].values / 255.0  
+    y = mnist['target'].astype(np.int64).values.reshape(-1, 1) 
+
     return X, y
