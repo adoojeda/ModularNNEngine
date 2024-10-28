@@ -1,18 +1,18 @@
-from DatasetHandler import DatasetHandler  # Asegúrate de usar el nombre correcto del archivo
+from data.load_data import load_iris_data
+import numpy as np
+from Neural_Network.neural_network import NeuralNetwork
+from Neural_Network.utils import preprocess_data, train_test_split
 
+X, y = load_iris_data() 
+X, y = preprocess_data(X, y.reshape(-1, 1))
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_seed=42)
 
-class Main:
-    def __init__(self):
-        print("Inicializando el programa...")
-        self.dataset_handler = DatasetHandler()  # Llama a tu clase DatasetHandler
+nn = NeuralNetwork()
+nn.train(X_train, y_train, learning_rate=0.2, epochs=750)
 
-    def run(self):
-        print("Ejecutando el programa...")
-        # Aquí puedes añadir el código para entrenar tu red neuronal o cualquier otra lógica
-        print("Datos normalizados (X_train):")
-        print(self.dataset_handler.X_train)
-        print("Etiquetas (y_train):", self.dataset_handler.y_train)
+y_pred_test = nn.forward(X_test)
+y_pred_classes_test = np.argmax(y_pred_test, axis=1)
+y_true_classes_test = np.argmax(y_test, axis=1)
 
-if __name__ == "__main__":
-    main_program = Main()  # Crea una instancia de la clase Main
-    main_program.run()      # Llama al método run de la clase Main
+accuracy_test = np.mean(y_pred_classes_test == y_true_classes_test)
+print(f"Precisión en el conjunto de prueba: {accuracy_test * 100:.2f}%")
