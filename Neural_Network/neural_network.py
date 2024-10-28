@@ -1,4 +1,3 @@
-from Neural_Network.conv import conv2d, max_pooling
 import numpy as np
 
 class NeuralNetwork:
