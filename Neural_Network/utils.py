@@ -1,23 +1,14 @@
 # utils.py
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
 import numpy as np
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
-def preprocess_datairis(X, y):
+def preprocess_data(X, y):
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
     encoder = OneHotEncoder(sparse_output=False)
     y_encoded = encoder.fit_transform(y)
 
-    return X_scaled, y_encoded
-
-def preprocess_datamnist(X, y):
-    X_flat = X.reshape(X.shape[0], -1)
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X_flat)
-    
-    y_encoded = np.zeros((y.size, y.max() + 1))
-    y_encoded[np.arange(y.size), y.flatten()] = 1
     return X_scaled, y_encoded
 
 def train_test_split(X, y, test_size=0.2, random_seed=42):
