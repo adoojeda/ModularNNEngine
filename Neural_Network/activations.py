@@ -31,5 +31,6 @@ def softmax(x):
     return exp_x / np.sum(exp_x, axis=0)
 
 def softmax_derivate(y_pred, y_true):
-    """Derivative of the softmax function."""
+    """Derivada de la función softmax."""
     return y_pred - y_true
+

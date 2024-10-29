@@ -1,7 +1,6 @@
 # load_data.py
 from sklearn.datasets import load_iris, fetch_openml
 import numpy as np
-from sklearn.preprocessing import OneHotEncoder
 
 def load_iris_data():
     """
