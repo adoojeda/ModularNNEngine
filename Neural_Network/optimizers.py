@@ -1,12 +1,37 @@
+# optimizers.py
 import numpy as np
 
 def cross_entropy(Y_pred, Y):
-    return -np.sum(Y*np.log(Y_pred.reshape(1, len(Y_pred))))
+    """
+    Calcula la pérdida de entropía cruzada.
+
+    :param Y_pred: Predicciones de la red.
+    :param Y: Etiquetas verdaderas.
+    :return: Valor de la pérdida.
+    """
+    return -np.sum(Y * np.log(Y_pred.reshape(1, len(Y_pred)) + 1e-10))  # Evita log(0)
 
 def adam_optimizer(model, X, y, measure_function, epochs=100, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
-    X_train, X_val = X[:int(len(X) * 0.8)], X[int(len(X) * 0.8):]
-    y_train, y_val = y[:int(len(y) * 0.8)], y[int(len(y) * 0.8):]
+    """
+    Optimiza los pesos y sesgos de la red usando el algoritmo Adam.
 
+    :param model: Instancia del modelo de red neuronal.
+    :param X: Datos de entrada.
+    :param y: Etiquetas verdaderas.
+    :param measure_function: Función para medir la precisión.
+    :param epochs: Número de épocas para entrenar.
+    :param learning_rate: Tasa de aprendizaje.
+    :param beta1: Parámetro beta1 para Adam.
+    :param beta2: Parámetro beta2 para Adam.
+    :param epsilon: Pequeño valor para evitar divisiones por cero.
+    :return: Listas de precisión y pérdida.
+    """
+    # División del conjunto de datos en entrenamiento y validación
+    split_index = int(len(X) * 0.8)
+    X_train, X_val = X[:split_index], X[split_index:]
+    y_train, y_val = y[:split_index], y[split_index:]
+
+    # Inicialización de momentos
     m_weights = [np.zeros_like(layer.weights) for layer in model.layers]
     v_weights = [np.zeros_like(layer.weights) for layer in model.layers]
     m_biases = [np.zeros_like(layer.bias) for layer in model.layers]
@@ -17,26 +42,30 @@ def adam_optimizer(model, X, y, measure_function, epochs=100, learning_rate=0.00
 
     for epoch in range(epochs):
         for i in range(len(X_train)):
-            derivates = model.backpropagation(X_train[i], y_train[i])
+            # Retropropagación
+            derivatives = model.backpropagation(X_train[i], y_train[i])
             for layer_idx, layer in enumerate(model.layers):
-                m_weights[layer_idx] = beta1 * m_weights[layer_idx] + (1 - beta1) * derivates[layer_idx][1]
-                v_weights[layer_idx] = beta2 * v_weights[layer_idx] + (1 - beta2) * (derivates[layer_idx][1] ** 2)
+                # Actualización de momentos
+                m_weights[layer_idx] = beta1 * m_weights[layer_idx] + (1 - beta1) * derivatives[layer_idx][1]
+                v_weights[layer_idx] = beta2 * v_weights[layer_idx] + (1 - beta2) * (derivatives[layer_idx][1] ** 2)
+                m_biases[layer_idx] = beta1 * m_biases[layer_idx] + (1 - beta1) * derivatives[layer_idx][0]
+                v_biases[layer_idx] = beta2 * v_biases[layer_idx] + (1 - beta2) * (derivatives[layer_idx][0] ** 2)
 
-                m_biases[layer_idx] = beta1 * m_biases[layer_idx] + (1 - beta1) * derivates[layer_idx][0]
-                v_biases[layer_idx] = beta2 * v_biases[layer_idx] + (1 - beta2) * (derivates[layer_idx][0] ** 2)
-
+                # Corrección de momentos
                 m_weights_corrected = m_weights[layer_idx] / (1 - beta1 ** (epoch + 1))
                 v_weights_corrected = v_weights[layer_idx] / (1 - beta2 ** (epoch + 1))
                 m_biases_corrected = m_biases[layer_idx] / (1 - beta1 ** (epoch + 1))
                 v_biases_corrected = v_biases[layer_idx] / (1 - beta2 ** (epoch + 1))
 
+                # Actualización de pesos y sesgos
                 layer.weights -= learning_rate * m_weights_corrected / (np.sqrt(v_weights_corrected) + epsilon)
                 layer.bias -= learning_rate * m_biases_corrected / (np.sqrt(v_biases_corrected) + epsilon)
 
         if epoch % 10 == 0:
-            Y_pred = [model.feedforward(x) for x in X_val]
+            Y_pred = np.array([model.feedforward(x) for x in X_val])
             acc = measure_function(y_val, Y_pred)
 
+            # Calcular la pérdida para el último ejemplo de entrenamiento
             loss = cross_entropy(model.feedforward(X_train[i]), y_train[i])
 
             print(f'epoch {epoch:3} - Loss {loss:.5f}, Accuracy {acc:.5f}')
@@ -47,24 +76,40 @@ def adam_optimizer(model, X, y, measure_function, epochs=100, learning_rate=0.00
     return acc_list, loss_list
 
 def gradient_descent(model, X, y, measure_function, epochs=100, learning_rate=0.01):
-    X, X_val = X[:int(len(X)*0.8)], X[int(len(X)*0.8):]
-    y, y_val = y[:int(len(y)*0.8)], y[int(len(y)*0.8):]
+    """
+    Optimiza los pesos y sesgos de la red usando el algoritmo de descenso de gradiente.
+
+    :param model: Instancia del modelo de red neuronal.
+    :param X: Datos de entrada.
+    :param y: Etiquetas verdaderas.
+    :param measure_function: Función para medir la precisión.
+    :param epochs: Número de épocas para entrenar.
+    :param learning_rate: Tasa de aprendizaje.
+    :return: Listas de precisión y pérdida.
+    """
+    # División del conjunto de datos en entrenamiento y validación
+    split_index = int(len(X) * 0.8)
+    X_train, X_val = X[:split_index], X[split_index:]
+    y_train, y_val = y[:split_index], y[split_index:]
 
     acc_list = []
     loss_list = []
 
     for epoch in range(epochs):
-        for i in range(len(X)):
-            derivates = model.backpropagation(X[i], y[i])                
-            for layer, derivate in zip(model.layers[::-1], derivates):
-                layer.weights -= learning_rate*derivate[1]
-                layer.bias -= learning_rate*derivate[0]
+        for i in range(len(X_train)):
+            # Retropropagación
+            derivatives = model.backpropagation(X_train[i], y_train[i])
+            for layer, derivative in zip(model.layers[::-1], derivatives):
+                # Actualización de pesos y sesgos
+                layer.weights -= learning_rate * derivative[1]
+                layer.bias -= learning_rate * derivative[0]
 
         if epoch % 10 == 0:
-            Y_pred = [model.feedfoward(x) for x in X_val]
+            Y_pred = np.array([model.feedforward(x) for x in X_val])
             acc = measure_function(y_val, Y_pred)
 
-            loss = cross_entropy(model.feedfoward(X[i]), y[i])
+            # Calcular la pérdida para el último ejemplo de entrenamiento
+            loss = cross_entropy(model.feedforward(X_train[i]), y_train[i])
 
             print(f'epoch {epoch:3} - Loss {loss:.5f}, Accuracy {acc:.5f}')
 
@@ -72,5 +117,3 @@ def gradient_descent(model, X, y, measure_function, epochs=100, learning_rate=0.
             loss_list.append(loss)
 
     return acc_list, loss_list
-
-
