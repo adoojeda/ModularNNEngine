@@ -1,6 +1,9 @@
 # load_data.py
-from sklearn.datasets import load_iris, fetch_openml
+import gzip
+import os
+from sklearn.datasets import load_iris, fetch_openml, load_digits
 import numpy as np
+import urllib
 
 def load_iris_data():
     """
@@ -13,11 +16,18 @@ def load_iris_data():
 
 def load_mnist_data():
     """
-    Carga y devuelve el dataset de MNIST.
+    Carga y devuelve el dataset MNIST.
     """
-    mnist = fetch_openml('mnist_784', version=1)
-    
-    X = mnist['data'].values / 255.0  
-    y = mnist['target'].astype(np.int64).values.reshape(-1, 1) 
+    mnist = fetch_openml('mnist_784', version=1, as_frame=False)
+    X = mnist.data
+    y = mnist.target
+    y = y.astype(int)
+    return X, y
 
+def load_digits_data():
+    """
+    Carga y devuelve el dataset de dígitos.
+    """
+    digits = load_digits()
+    X, y = digits.data, digits.target
     return X, y
