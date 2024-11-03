@@ -11,14 +11,14 @@ def cross_entropy(Y_pred, Y):
     """
     return -np.sum(Y * np.log(Y_pred.reshape(1, len(Y_pred)) + 1e-10))  # Evita log(0)
 
-def adam_optimizer(model, X, y, measure_function, epochs=100, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
+def adam_optimizer(model, X, y, accuracy, epochs=100, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8):
     """
     Optimiza los pesos y sesgos de la red usando el algoritmo Adam.
 
     :param model: Instancia del modelo de red neuronal.
     :param X: Datos de entrada.
     :param y: Etiquetas verdaderas (debe estar en formato one-hot).
-    :param measure_function: Función para medir la precisión.
+    :param accuracy: Función para medir la precisión.
     :param epochs: Número de épocas para entrenar.
     :param learning_rate: Tasa de aprendizaje.
     :param beta1: Parámetro beta1 para Adam.
@@ -60,7 +60,7 @@ def adam_optimizer(model, X, y, measure_function, epochs=100, learning_rate=0.00
 
         if epoch % 10 == 0:
             Y_pred = np.array([model.feedforward(x) for x in X_val])
-            acc = measure_function(y_val, Y_pred)
+            acc = accuracy(y_val, Y_pred)
 
             loss = model.compute_loss(y_train[i], model.feedforward(X_train[i]))
 
@@ -72,14 +72,14 @@ def adam_optimizer(model, X, y, measure_function, epochs=100, learning_rate=0.00
     return acc_list, loss_list
 
 
-def gradient_descent(model, X, y, measure_function, epochs=100, learning_rate=0.01):
+def gradient_descent(model, X, y, accuracy, epochs=100, learning_rate=0.01):
     """
     Optimiza los pesos y sesgos de la red usando el algoritmo de descenso de gradiente.
 
     :param model: Instancia del modelo de red neuronal.
     :param X: Datos de entrada.
     :param y: Etiquetas verdaderas.
-    :param measure_function: Función para medir la precisión.
+    :param accuracy: Función para medir la precisión.
     :param epochs: Número de épocas para entrenar.
     :param learning_rate: Tasa de aprendizaje.
     :return: Listas de precisión y pérdida.
@@ -100,7 +100,7 @@ def gradient_descent(model, X, y, measure_function, epochs=100, learning_rate=0.
 
         if epoch % 10 == 0:
             Y_pred = np.array([model.feedforward(x) for x in X_val])
-            acc = measure_function(y_val, Y_pred)
+            acc = accuracy(y_val, Y_pred)
 
             loss = cross_entropy(model.feedforward(X_train[i]), y_train[i])
 
