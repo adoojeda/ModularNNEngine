@@ -9,7 +9,7 @@ class Layer:
         :param num_inputs: Número de neuronas en la capa anterior.
         :param num_units: Número de neuronas en esta capa.
         :param activation_func: Función de activación a utilizar.
-        :param activation_derivative: Derivada de la función de activación.
+        :param activation_derivate: Derivada de la función de activación.
         """
         self.num_units = num_units
         self.weights = np.random.randn(num_units, num_inputs)  # Inicialización de He
