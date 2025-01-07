@@ -1,64 +1,105 @@
-# Neural Network 
+# Neural Network
 
-Este proyecto implementa una red neuronal desde cero en Python, sin hacer uso de librerias de aprendizaje profundo como puede ser TensorFlow o Pytorch. La red neural se entrena y evalúa en tres conjuntos de datos clásicos: Iris, Digits y Wine.
+Este proyecto implementa una red neuronal desde cero en Python, sin hacer uso de librerías de aprendizaje profundo como TensorFlow o PyTorch. La red neuronal se entrena y evalúa en tres conjuntos de datos clásicos: Iris, Digits y Wine.
+
+## Introducción
+
+Las redes neuronales artificiales son herramientas fundamentales en el aprendizaje automático, con aplicaciones en clasificación, reconocimiento de patrones y otros problemas complejos. Este proyecto aborda el diseño, entrenamiento y evaluación de una red neuronal modular, centándose en la construcción de capas, funciones de activación, algoritmos de retropropagación y optimizadores.
 
 ## Estructura del Proyecto
 
-En el archivo *activations.py*, se definen las funciones de activación que son esenciales para dar no linealidad a la red neuronal. Entre estas funciones se encuentran relu, softmax, tanh y sigmoid. Estas funciones se utilizan en las capas de la red neuronal para transformar las señales que fluyen entre las neuronas, lo cual permite al modelo aprender representaciones complejas de los datos.
+### Funciones de Activación (*activations.py*)
+Se incluyen funciones de activación como ReLU, Sigmoid, Tanh y Softmax, junto con sus derivadas, esenciales para dar no linealidad y permitir el aprendizaje de relaciones complejas.
 
-El archivo *layer.py* contiene la implementación de la clase Layer, que representa una capa individual en la red neuronal. La clase Layer incluye atributos como el tamaño de la entrada y salida, la función de activación y su derivada. También define métodos como forward, que realiza la propagación hacia adelante en una capa específica. Cada capa en la red puede configurarse con distintos tamaños y funciones de activación, permitiendo la creación de arquitecturas personalizadas.
+### Clase de Capa (*layer.py*)
+Define la estructura de una capa individual en la red. Incluye atributos como dimensiones de entrada/salida y métodos como `forward` para la propagación hacia adelante.
 
-En *neural_network.py* se encuentra la clase principal NeuralNetwork, que maneja la estructura completa de la red neuronal. La clase NeuralNetwork permite añadir múltiples capas (usando la clase Layer) y define métodos fundamentales como feedforward, para la propagación hacia adelante a través de todas las capas, y backpropagation, para ajustar los pesos de todas las capas mediante la retropropagación. Además, el método accuracy calcula la precisión del modelo comparando las etiquetas verdaderas con las predichas, lo que permite evaluar el rendimiento de la red en distintas etapas del entrenamiento.
+### Red Neuronal (*neural_network.py*)
+Clase principal que gestiona la red completa, incluyendo la adición de capas, feedforward y retropropagación. También incluye métricas de evaluación como precisión y pérdida.
 
-El archivo *optimizers.py* contiene los algoritmos de optimización utilizados durante el entrenamiento de la red neuronal. En este caso, el archivo incluye la implementación de gradient_descent, una función que aplica el algoritmo de descenso de gradiente para ajustar los pesos del modelo durante múltiples épocas de entrenamiento. Este optimizador toma el modelo, los datos de entrenamiento, la tasa de aprendizaje y la función de precisión, permitiendo un entrenamiento supervisado.
+### Preprocesamiento (*preprocessing.py*)
+Incluye operaciones como:
+- **Escalado** con `StandardScaler` para normalizar las características.
+- **Codificación One-Hot** para etiquetas.
 
-Para preparar los datos antes de entrenar la red, el archivo *preprocessing.py* ofrece la función preprocess_data. Esta función se encarga de transformar los datos de entrada y las etiquetas, aplicando operaciones como normalización, que mejoran la eficiencia y precisión del modelo durante el entrenamiento.
+### Optimizadores (*optimizers.py*)
+Contiene el algoritmo de descenso de gradiente y su variante Momentum, utilizados para ajustar los pesos durante el entrenamiento.
 
-La visualización de métricas y resultados se realiza a través del archivo *visualizations.py*, que incluye funciones como plot_confusion_matrix, para generar una matriz de confusión que muestra el rendimiento del modelo en términos de clasificaciones correctas e incorrectas. Además, roc_curve se utiliza para calcular y mostrar la curva ROC, una métrica que permite analizar la tasa de verdaderos positivos frente a los falsos positivos para cada clase en un problema de clasificación.
+### Visualización (*visualizations.py*)
+Proporciona herramientas como:
+- **Matriz de confusión** para comparar predicciones con etiquetas reales.
+- **Curvas ROC** para evaluar la tasa de verdaderos positivos y falsos positivos.
 
-El archivo *load_data.py* en el directorio data se utiliza para cargar los conjuntos de datos Iris y Digits, que son ampliamente utilizados para tareas de clasificación y benchmarking en redes neuronales. Este archivo contiene funciones como load_iris_data y load_digits_data, que cargan y devuelven los datos junto con sus etiquetas, listos para ser preprocesados y utilizados en el entrenamiento de la red.
+### Carga de Datos (*load_data.py*)
+Funciones para cargar los conjuntos de datos Iris, Digits y Wine desde scikit-learn, asegurando compatibilidad con las siguientes etapas del flujo de trabajo.
 
-Finalmente, *main.ipynb* es el script principal que coordina la ejecución del proyecto. Este archivo de notebook contiene el flujo de trabajo completo: carga y preprocesamiento de los datos, creación y entrenamiento de diferentes arquitecturas de redes neuronales, evaluación de la precisión del modelo antes y después del entrenamiento, y visualización de resultados con curvas ROC. En el notebook se crean y evalúan distintos modelos, probando varias configuraciones de capas y funciones de activación para analizar su rendimiento en los conjuntos de datos Iris y Digits.
+### Notebook Principal (*main.ipynb*)
+Centraliza todas las etapas del proyecto:
+1. Carga y preprocesamiento de datos.
+2. Diseño y entrenamiento de modelos.
+3. Evaluación y visualización de resultados.
 
-## Ejecución del proyecto.
+## Conjuntos de Datos
 
-Versión de Python, 3.10 en adelante.
-Bibliotecas necesarias:
-    numpy
-    scikit-learn
-    matplotlib
+### Iris
+- 150 muestras de tres clases de flores.
+- Atributos: longitud y ancho del sépalo y pétalo.
 
-Puedes instalar las liberías con el comando :
-pip install (nombre de la libreria)
+### Digits
+- 1797 imágenes de dígitos escritos a mano (resolución de 8x8).
+- 10 clases correspondientes a los dígitos del 0 al 9.
+
+### Wine
+- 178 muestras de vino clasificadas en tres clases.
+- 13 atributos como nivel de alcohol, fenoles totales y acidez.
+
+## Experimentos y Resultados
+
+Se evaluaron diferentes arquitecturas para los conjuntos de datos:
+
+### Iris
+1. **Modelo 1:** Capa oculta (5 neuronas, ReLU) y salida (3 neuronas, Softmax). Precisión: 97%.
+2. **Modelo 2:** Tres capas ocultas (20, 10, 6 neuronas). Precisión: 93%.
+
+### Digits
+1. **Modelo 1:** Capa oculta (5 neuronas, Tanh) y salida (10 neuronas, Softmax). Precisión: 83.6%.
+2. **Modelo 2:** Tres capas ocultas (32, 16, 8 neuronas, Sigmoid). Precisión: 90.8%.
+
+### Wine
+1. **Modelo 1:** Arquitectura básica con Sigmoid. Precisión: 100%.
+
+## Ejecución del Proyecto
+
+### Requisitos
+- Python 3.10+
+- Librerías: `numpy`, `scikit-learn`, `matplotlib`
+
+Instala las dependencias:
+```bash
+pip install numpy scikit-learn matplotlib
+```
 
 ### Uso
-Para entrenar y evaluar la red neuronal, ejecuta el notebook main.ipynb, el cual:
-* Carga los datos: Utiliza load_iris_data y load_digits_data para cargar y preprocesar los datos de Iris y Digits respectivamente.
+Ejecuta el notebook principal *main.ipynb* para:
+1. Cargar y preprocesar datos.
+2. Entrenar y evaluar diferentes arquitecturas.
+3. Visualizar resultados mediante matrices de confusión y curvas ROC.
 
-Entrenamiento y Evaluación de Modelos:
-* Crea dos arquitecturas de red diferentes para cada conjunto de datos.
-* Imprime la precisión antes y después del entrenamiento.
+## Conclusiones
+El proyecto destaca la importancia de equilibrar la complejidad del modelo y la capacidad de generalización, con arquitecturas simples logrando alto rendimiento en datos bien estructurados. Optimizar hiperparámetros y funciones de activación es crucial para mejorar la precisión.
 
-Visualización:
-* Muestra las curvas ROC para cada modelo y clase, lo cual ayuda a analizar el rendimiento del modelo en términos de tasa de verdaderos positivos y falsos positivos.
+## Trabajo Futuro
+1. Incorporar regularización como Dropout o Batch Normalization.
+2. Ampliar soporte a arquitecturas profundas (CNN, RNN).
+3. Evaluar el rendimiento en tareas de texto, series temporales y clasificación de imágenes.
+4. Implementar un dashboard para visualización interactiva.
 
-## Ejemplo de Arquitecturas
-### Para el conjunto de datos Iris:
+## Colaboradores del Proyecto
+- Joel Clemente López Cabrera
+- Adonai Ojeda Martín
+- Daniel Medina González
 
-Modelo 1: Capa oculta con 5 neuronas (ReLU) y capa de salida con 3 neuronas (softmax).
-Modelo 2: Red profunda con 3 capas ocultas y softmax en la salida.
-Para el conjunto de datos Digits:
+---
 
-### Para el conjunto de datos Digits:
-Modelo 1: Capa oculta con 5 neuronas (tanh) y capa de salida con 10 neuronas (softmax).
-Modelo 2: Red profunda con 3 capas ocultas de diferentes tamaños y softmax en la salida.
-
-# Visualización de Resultados
-Al final del entrenamiento, el notebook muestra las curvas ROC para cada modelo, ayudando a evaluar su desempeño en términos de precisión y sensibilidad.
-
-# Colaboradores del protecto
-Para este proyecto han colaborado los alumnos:
-* Joel Clemente López Cabrera.
-* Adonai Ojeda Martín.
-* Daniel Medina González
+Repositorio GitHub: [Modular Neural Network Engine](https://github.com/adoojeda/ModularNNEngine).
 
