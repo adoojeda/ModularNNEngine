@@ -1,6 +1,6 @@
 # Neural Network 
 
-Este proyecto implementa una red neuronal desde cero en Python, sin hacer uso de librerias de aprendizaje profundo como puede ser TensorFlow o Pytorch. La red neural se entrena y evalúa en dos conjuntos de datos clásicos: Iris y Digits.
+Este proyecto implementa una red neuronal desde cero en Python, sin hacer uso de librerias de aprendizaje profundo como puede ser TensorFlow o Pytorch. La red neural se entrena y evalúa en tres conjuntos de datos clásicos: Iris, Digits y Wine.
 
 ## Estructura del Proyecto
 
